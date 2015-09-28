@@ -1,5 +1,5 @@
-import tempfile, BaseHTTPServer, cgi, os, shutil, SocketServer, time
-import Queue, threading, csv, sys, itertools, re
+import tempfile, BaseHTTPServer, cgi, os, shutil, SocketServer, time, os
+import Queue, threading, csv, sys, itertools, re, glob, dateutil, ast
 
 p = '.'
 if p not in sys.path:
@@ -39,8 +39,10 @@ def voter(csventry):
 
 voterstream = itertools.imap(voter, _voterstream())
 
-logname = '~/nys-%s.log' % time.ctime().replace(' ', '-')
-logname = os.path.expanduser(logname)
+logdirpath = './logs'
+if not os.path.isdir(logdirpath):
+    os.mkdir(logdirpath)
+logname = os.path.join(logdirpath, 'nys-%s.log' % time.ctime().replace(' ', '-'))
 logfile = open(logname, 'w')
 logqueue = Queue.Queue()
 def logwork():
@@ -55,6 +57,23 @@ logthread.start()
 def log(s):
     logqueue.put('%s %s' % (time.ctime(), str(s)))
 
+# Parse the  old logs, to get  the list of processed  voters.  This is
+# starting to get ugly.  Probably time to move to a real DB.
+processed_voters = set()
+for p in glob.glob('logs/*.log'):
+    for line in open(p):
+        line = line.split()
+        try:
+            dateutil.parser.parse(' '.join(line[:4]))
+        except ValueError:
+            raise RuntimeError, 'Failed to parse log line "%s" in file %s' % (line, p)
+        logdata = ast.literal_eval(' '.join(line[4:]))
+        if logdata[1] == 'FLIERS':
+            processed_voters.update(set(logdata[-1]))
+
+print '%i voters have already been processed and will be ignored' % len(processed_voters)
+
+# Get the landing page
 form = open('form.html').read()
 
 class RequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
@@ -64,7 +83,7 @@ class RequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
         self.send_header("Content-type", "text/html")
         self.end_headers()
         self.wfile.write(form)
-        log((self.client_address[0],))
+        log((self.client_address[0], 'FRONT'))
 
     def do_POST(self):
         ctype, pdict = cgi.parse_header(self.headers.getheader(
@@ -90,7 +109,7 @@ class RequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
         fromaddr = postvars
         numfliers = min(maxpages, int(postvars['numfliers']))
         toaddrs = list(itertools.islice(voterstream, numfliers))
-        log((self.client_address[0], fromaddr, [a['SBOEID'] for a in toaddrs]))
+        log((self.client_address[0], 'FLIERS', fromaddr, [a['SBOEID'] for a in toaddrs]))
         doc = sheet.makedoc(self.wfile)
         pages = list(itertools.chain(*(
             sheet.addrsheet(fromaddr, toaddr, toaddr['boe'], include_rego)

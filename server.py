@@ -116,5 +116,5 @@ class ThreadedHTTPServer(SocketServer.ThreadingMixIn,
 
 if __name__ == '__main__':
     BaseHTTPServer.test(HandlerClass=RequestHandler,
-                        # ServerClass=ThreadedHTTPServer
+                        ServerClass=ThreadedHTTPServer
                         )

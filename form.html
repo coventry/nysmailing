@@ -17,8 +17,23 @@
     <link rel="icon" href="data:;base64,iVBORw0KGgo=">
 
     <title>NYS Voter Registration Mailing</title>
+       <style type="text/css" media="screen">
+	 a:link { color: red; text-decoration: none; }
+	 a:visited { color: #FF5C5C; text-decoration: none; }
+	 a:hover { color:#33348e; text-decoration: none; }
+	 a:active { color:#7476b4; text-decoration: underline; }
+	 input { color: black; }
+	 select { color: black; }
+       </style>
+
   </head>
-  <body style="padding-top: 70px;" comment="Avoid overlay by navbar">
+  <body style="background-color: transparent;
+	       background:url('http://rack.2.mshcdn.com/media/ZgkyMDE1LzA4LzEyLzRlL1NhbmRlcnNyYWxsLmRjZTRjLmpwZwpwCXRodW1iCTEyMDB4OTYwMD4/e0754183/aad/Sanders-rally.jpg')no-repeat;
+	       background-size: cover;
+	       display:block;
+	       margin:0;
+	       /* padding:0 !important; // This prevents the padding-top command from working.  What is it for? */
+	       padding-top: 70px; // Avoid occlusion by navbar">
 
     <!-- More bootstrap boilerplate -->
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
@@ -45,8 +60,7 @@
       </div>
     </nav>
 
-    <div class="container">
-    
+    <div class="container" style="background-color: rgba(0,0,0,0.7); color: white;">      
       <div class="row">
 	<div class="col-xs-12 col-md-6">
     

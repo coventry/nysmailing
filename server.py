@@ -20,14 +20,14 @@ def _voterstream():
             yield row
 
 def voter(csventry):
-    csventry['fname'] = csventry['FIRSTNAME'].capitalize()
-    csventry['lname'] = csventry['LASTNAME'].capitalize()
+    csventry['fname'] = csventry['FIRSTNAME'].title()
+    csventry['lname'] = csventry['LASTNAME'].title()
     # First get the residential address
     csventry['street'] = ' '.join(
-        csventry[n].capitalize() for n in 'RADDNUMBER RHALFCODE RPREDIRECTION RSTREETNAME RPOSTDIRECTION'.split())
+        csventry[n].title() for n in 'RADDNUMBER RHALFCODE RPREDIRECTION RSTREETNAME RPOSTDIRECTION'.split())
     if csventry['RAPARTMENT']:
         csventry['street'] += ' Apt ' + csventry['RAPARTMENT']
-    csventry['city'] = csventry['RCITY'].capitalize()
+    csventry['city'] = csventry['RCITY'].title()
     csventry['state'] = 'NY' # Has to be, I guess?  No state column in db.
     csventry['zip'] = csventry['RZIP5'] + ( '-' + csventry['RZIP4'] if csventry['RZIP4'] else '')
     if csventry['MAILADD1']:

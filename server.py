@@ -88,6 +88,7 @@ class RequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
         fromaddr = postvars
         numfliers = min(maxpages, int(postvars['numfliers']))
         toaddrs = list(itertools.islice(voterstream, numfliers))
+        log((self.client_address[0], fromaddr, [a['SBOEID'] for a in toaddrs]))
         doc = sheet.makedoc(self.wfile)
         pages = list(itertools.chain(*(
             sheet.addrsheet(fromaddr, toaddr, toaddr['boe'])

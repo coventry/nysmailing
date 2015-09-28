@@ -90,14 +90,7 @@ class RequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
             for toaddr in toaddrs)
         doc.build(pages)
 
-class ThreadedHTTPServer(SocketServer.ThreadingMixIn, 
-                         BaseHTTPServer.HTTPServer):
-    """Handle requests in a separate thread."""
-
-if __name__ == '__main__':
-    # BaseHTTPServer.test(HandlerClass=RequestHandler,
-    #                     # ServerClass=ThreadedHTTPServer
-    #                     )
+def test_generation():
     numfliers = 100
     fromaddr = sheet.myaddr
     toaddrs = list(itertools.islice(
@@ -110,3 +103,11 @@ if __name__ == '__main__':
         for toaddr in toaddrs)))
     doc.build(pages)
     
+class ThreadedHTTPServer(SocketServer.ThreadingMixIn, 
+                         BaseHTTPServer.HTTPServer):
+    """Handle requests in a separate thread."""
+
+if __name__ == '__main__':
+    BaseHTTPServer.test(HandlerClass=RequestHandler,
+                        # ServerClass=ThreadedHTTPServer
+                        )

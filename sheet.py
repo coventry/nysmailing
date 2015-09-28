@@ -72,7 +72,8 @@ def disclaimer(fromaddr, toaddr):
 
         {fname} {lname}  (address above)  used nysmailing.com  and his
         personal resources to prepare & send this form, without anyone
-        else's permission, because <b>he wants YOUR vote to COUNT!</b>
+        else's permission,  because <b>he  or she  wants YOUR  vote to
+        COUNT!</b>
 
         """.format(**fromaddr), postagebox, )
         ]], colWidths=[0.95*qwidth], # rowHeights=[0.5*inch, 1*inch],

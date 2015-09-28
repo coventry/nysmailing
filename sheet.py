@@ -22,7 +22,6 @@ class RotatedImage(Image):
 
     def wrap(self,availWidth,availHeight):
         h, w = Image.wrap(self,availHeight,availWidth)
-        print h, w, availHeight, availWidth
         return w, h
     def draw(self, ):
         self.canv.rotate(90)

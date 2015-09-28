@@ -193,7 +193,7 @@ def addrsheet(fromaddr, toaddr, boeaddr):
                          ('LINEBEFORE', (1, 0), (-1,-1), 0.5, colors.black),
                          ('VALIGN', (0,0), (-1,-1), 'TOP')]),
             PageBreak(),
-            # voteform
+            voteform
             ]
 
 def makedoc(filename):

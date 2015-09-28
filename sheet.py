@@ -34,7 +34,7 @@ formpath = 'voteform-bandw-0.png'
 iw, ih = utils.ImageReader(formpath).getSize()
 aspect = ih / float(iw)
 height = maxlen = 762
-maxwidth = 582
+maxwidth = 0.85*582
 voteform = Image(formpath, width=maxwidth/aspect, height=maxwidth)
 
 def address(addr):

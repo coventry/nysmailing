@@ -8,37 +8,6 @@ if p not in sys.path:
 import sheet, boes
 reload(sheet); reload(boes)
 
-field_names = ['LASTNAME', 'FIRSTNAME', 'MIDDLENAME', 'NAMESUFFIX', 'RADDNUMBER', 'RHALFCODE', 'RAPARTMENT', 'RPREDIRECTION', 'RSTREETNAME', 'RPOSTDIRECTION', 'RCITY', 'RZIP5', 'RZIP4', 'MAILADD1', 'MAILADD2', 'MAILADD3', 'MAILADD4', 'DOB', 'GENDER', 'ENROLLMENT', 'OTHERPARTY', 'COUNTYCODE', 'ED', 'LD', 'TOWNCITY', 'WARD', 'CD', 'SD', 'AD', 'LASTVOTEDDATE', 'PREVYEARVOTED', 'PREVCOUNTY', 'PREVADDRESS', 'PREVNAME', 'COUNTYVRNUMBER', 'REGDATE', 'VRSOURCE', 'IDREQUIRED', 'IDMET', 'STATUS', 'REASONCODE', 'INACT_DATE', 'PURGE_DATE', 'SBOEID', 'VoterHistory']
-
-#Database accessor.
-database_path = 'targeted_voters_sorted.csv'
-def _voterstream():
-    while True:
-        vdb = csv.DictReader(open(database_path),
-                             fieldnames=field_names)
-        for row in vdb:
-            yield row
-
-def voter(csventry):
-    csventry['fname'] = csventry['FIRSTNAME'].title()
-    csventry['lname'] = csventry['LASTNAME'].title()
-    # First get the residential address
-    csventry['street'] = ' '.join(
-        csventry[n].title() for n in 'RADDNUMBER RHALFCODE RPREDIRECTION RSTREETNAME RPOSTDIRECTION'.split())
-    if csventry['RAPARTMENT']:
-        csventry['street'] += ' Apt ' + csventry['RAPARTMENT']
-    csventry['city'] = csventry['RCITY'].title()
-    csventry['state'] = 'NY' # Has to be, I guess?  No state column in db.
-    csventry['zip'] = csventry['RZIP5'] + ( '-' + csventry['RZIP4'] if csventry['RZIP4'] else '')
-    if csventry['MAILADD1']:
-        # OK, there's also a mailing address.  Use that instead.
-        addr = filter(None, [csventry['MAILADD%i' % i] for i in range(1, 5)])
-        csventry['freeaddr'] = addr
-    csventry['boe'] = boes.boes[int(csventry['COUNTYCODE'])-1]
-    return csventry
-
-voterstream = itertools.imap(voter, _voterstream())
-
 logdirpath = './logs'
 if not os.path.isdir(logdirpath):
     os.mkdir(logdirpath)
@@ -72,6 +41,37 @@ for p in glob.glob('logs/*.log'):
             processed_voters.update(set(logdata[-1]))
 
 print '%i voters have already been processed and will be ignored' % len(processed_voters)
+
+field_names = ['LASTNAME', 'FIRSTNAME', 'MIDDLENAME', 'NAMESUFFIX', 'RADDNUMBER', 'RHALFCODE', 'RAPARTMENT', 'RPREDIRECTION', 'RSTREETNAME', 'RPOSTDIRECTION', 'RCITY', 'RZIP5', 'RZIP4', 'MAILADD1', 'MAILADD2', 'MAILADD3', 'MAILADD4', 'DOB', 'GENDER', 'ENROLLMENT', 'OTHERPARTY', 'COUNTYCODE', 'ED', 'LD', 'TOWNCITY', 'WARD', 'CD', 'SD', 'AD', 'LASTVOTEDDATE', 'PREVYEARVOTED', 'PREVCOUNTY', 'PREVADDRESS', 'PREVNAME', 'COUNTYVRNUMBER', 'REGDATE', 'VRSOURCE', 'IDREQUIRED', 'IDMET', 'STATUS', 'REASONCODE', 'INACT_DATE', 'PURGE_DATE', 'SBOEID', 'VoterHistory']
+
+#Database accessor.
+database_path = 'targeted_voters_sorted.csv'
+def _voterstream():
+    while True:
+        vdb = csv.DictReader(open(database_path),
+                             fieldnames=field_names)
+        for row in vdb:
+            yield row
+
+def voter(csventry):
+    csventry['fname'] = csventry['FIRSTNAME'].title()
+    csventry['lname'] = csventry['LASTNAME'].title()
+    # First get the residential address
+    csventry['street'] = ' '.join(
+        csventry[n].title() for n in 'RADDNUMBER RHALFCODE RPREDIRECTION RSTREETNAME RPOSTDIRECTION'.split())
+    if csventry['RAPARTMENT']:
+        csventry['street'] += ' Apt ' + csventry['RAPARTMENT']
+    csventry['city'] = csventry['RCITY'].title()
+    csventry['state'] = 'NY' # Has to be, I guess?  No state column in db.
+    csventry['zip'] = csventry['RZIP5'] + ( '-' + csventry['RZIP4'] if csventry['RZIP4'] else '')
+    if csventry['MAILADD1']:
+        # OK, there's also a mailing address.  Use that instead.
+        addr = filter(None, [csventry['MAILADD%i' % i] for i in range(1, 5)])
+        csventry['freeaddr'] = addr
+    csventry['boe'] = boes.boes[int(csventry['COUNTYCODE'])-1]
+    return csventry
+
+voterstream = itertools.imap(voter, _voterstream())
 
 # Get the landing page
 form = open('form.html').read()

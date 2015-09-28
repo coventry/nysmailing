@@ -78,11 +78,15 @@ class RequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
         else:
             postvars = {}
         postvars = dict((n, ' '.join(v)) for n, v in postvars.items())
+        if 'singlesided' in postvars:
+            maxpages = 100
+        else:
+            maxpages = 3
         self.send_response(200)
         self.send_header('Content-type', 'application/pdf')
         self.end_headers()
         fromaddr = postvars
-        numfliers = min(30, int(postvars['numfliers']))
+        numfliers = min(maxpages, int(postvars['numfliers']))
         toaddrs = list(itertools.islice(voterstream, numfliers))
         doc = sheet.makedoc(self.wfile)
         pages = list(itertools.chain(*(

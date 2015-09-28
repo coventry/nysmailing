@@ -16,7 +16,7 @@
 
     <link rel="icon" href="data:;base64,iVBORw0KGgo=">
 
-    <title>Super-Cheap Bernie Fliers -- In the Style of Bernie's Hair</title>
+    <title>NYS Voter Registration Mailing</title>
   </head>
   <body style="padding-top: 70px;" comment="Avoid overlay by navbar">
 
@@ -45,7 +45,43 @@
       </div>
     </nav>
 
-      <form action="/" method="post">
+    <div class="container">
+      <h3>Tell New Yorkers they're about to be disenfranchised!</h3>
+    
+    <p style="color: red;">Please do not mail any of these fliers yet.
+    This is a prototype, and the database they're being generated from
+    will be reset when it's ready for release.</p>
+    
+    <p>You can use the form below to generate fliers you can print out
+    and mail to NYS residents who are not registered as Democrat.  These
+    fliers inform people of a looming deadline after which many NYS
+    voters will be unable to participate in next year's Democratic
+    Presidential Primary.</p>
+
+    <p>Residents of NYS must
+    be <a href="http://www.ifyouwantbernie.com/NY/">registered as
+    Democrat with the Board of Elections by October 9</a> if they want
+    to participate in the 2016 NYS Presidential Primary.</p>
+
+    <p>There is a <a href="http://teambernieny.org/call/">phone
+    banking</a> effort underway to persuade as many NYS voters as
+    possible to register by October 9.  However, the voters for whom the
+    NYS Board of Elections provides a mailing address outnumber the
+    phone banking list by a couple of orders of magnitude.  Also,
+    although it's more expensive, sending mail to people is considerably
+    less effort per contact, and probably more likely to reach people.</p>
+
+    <p>To use these fliers, print them out with the address sheets on
+    one side and the first page of
+    the <a href="http://www.elections.ny.gov/NYSBOE/download/voting/voteform.pdf">registration
+    form</a> on the other.</p>  Put stamps on the two "postage" boxes,
+    and fold them into quarters so that the recipient's address is
+    exposed and <b>the board of elections address is hidden.</b>  That
+    means folding vertically first, then horizontally.  Seal the letter
+    with a small piece of sticky tape, and you're ready to save a voter
+    from disenfranchisement!</p>
+
+      <form action="/fliers.pdf" method="post">
 
 	<div class="row">
 	  <div class="col-xs-12 col-md-5">
@@ -116,8 +152,15 @@
 	      </select> <br/></p> 
 	    	    <p><b>Your zip code:</b><br/>
 	      <input type="text" name="zip" value="45349" size="50"/></p>
-	    <p><b>Number of fliers to print (max 30 per query):</b><br/>
-	      <input type="text" name="numfliers" value=100 size="50"/></p>
+	    <p><b>Number of fliers to print (max 3 per query for
+	      double-sided output):</b><br/>
+	      <input type="text" name="numfliers" value=3
+	      size="50"/></p>
+	    <p><b>Single-sided output.  I.e., you'll print
+	    the <a href="http://www.elections.ny.gov/NYSBOE/download/voting/voteform.pdf">registration
+	    form</a> on the other side yourself.</b>  If you check this
+	    box, you can get up to 100 sheets per query.<br/>
+	      <input type="checkbox" name="singlesided" value="single"></p>
 	    <input class="btn btn-success" type="submit" value="Submit" style="padding: 1px 1px;">
 	  </div>
 	  <div class="col-md-4">

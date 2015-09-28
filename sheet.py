@@ -180,8 +180,8 @@ def bernie(addr):
         )
         ]
 
-def addrsheet(fromaddr, toaddr, boeaddr):
-    return [Spacer(1,0.095*inch),
+def addrsheet(fromaddr, toaddr, boeaddr, include_voteform=True):
+    sheet = [Spacer(1,0.095*inch),
             Table([
         [envelope(fromaddr, toaddr,  disclaimer), envelope(toaddr,   boeaddr, instructions) ],
         [c2a(toaddr), bernie(toaddr)],
@@ -192,8 +192,10 @@ def addrsheet(fromaddr, toaddr, boeaddr):
                          ('LINEBEFORE', (1, 0), (-1,-1), 0.5, colors.black),
                          ('VALIGN', (0,0), (-1,-1), 'TOP')]),
             PageBreak(),
-            voteform
             ]
+    if include_voteform:
+        sheet.append(voteform)
+    return sheet
 
 def makedoc(filename):
     return SimpleDocTemplate(filename,

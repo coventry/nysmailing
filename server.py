@@ -80,8 +80,10 @@ class RequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
         postvars = dict((n, ' '.join(v)) for n, v in postvars.items())
         if 'singlesided' in postvars:
             maxpages = 100
+            include_rego = False
         else:
             maxpages = 3
+            include_rego = True
         self.send_response(200)
         self.send_header('Content-type', 'application/pdf')
         self.end_headers()
@@ -91,7 +93,7 @@ class RequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
         log((self.client_address[0], fromaddr, [a['SBOEID'] for a in toaddrs]))
         doc = sheet.makedoc(self.wfile)
         pages = list(itertools.chain(*(
-            sheet.addrsheet(fromaddr, toaddr, toaddr['boe'])
+            sheet.addrsheet(fromaddr, toaddr, toaddr['boe'], include_rego)
             for toaddr in toaddrs)))
         doc.build(pages)
 

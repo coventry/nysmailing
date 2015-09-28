@@ -82,7 +82,7 @@ class RequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
         self.send_header('Content-type', 'application/pdf')
         self.end_headers()
         fromaddr = postvars
-        numfliers = int(postvars['numfliers'])
+        numfliers = min(30, int(postvars['numfliers']))
         toaddrs = list(itertools.islice(voterstream, numfliers))
         doc = sheet.makedoc(self.wfile)
         pages = itertools.chain(

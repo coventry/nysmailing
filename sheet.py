@@ -28,13 +28,14 @@ class RotatedImage(Image):
         self.canv.translate(-50,-810)
         Image.draw(self)
 
-# Made with convert -density 300 voteform.pdf voteform.png
-formpath = 'voteform-0.png'
+# Made with convert  -density 250 -rotate 90 -colorspace gray -background white -alpha remove -threshold '80%' ../voteform.pdf voteform-bandw.png && display voteform-bandw-0.png 
+formpath = 'voteform-bandw-0.png'
 # 612 x 1008
 iw, ih = utils.ImageReader(formpath).getSize()
 aspect = ih / float(iw)
-height = 800
-voteform = RotatedImage(formpath, height=height, width=height/aspect)
+height = maxlen = 762
+maxwidth = 582
+voteform = Image(formpath, width=maxwidth/aspect, height=maxwidth)
 
 def address(addr):
     if 'freeaddr' in addr:

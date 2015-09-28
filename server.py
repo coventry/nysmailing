@@ -51,6 +51,7 @@ def _voterstream():
         vdb = csv.DictReader(open(database_path),
                              fieldnames=field_names)
         for row in vdb:
+            if row['SBOEID'] not in processed_voters:
             yield row
 
 def voter(csventry):

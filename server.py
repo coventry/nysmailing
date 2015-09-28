@@ -85,9 +85,9 @@ class RequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
         numfliers = min(30, int(postvars['numfliers']))
         toaddrs = list(itertools.islice(voterstream, numfliers))
         doc = sheet.makedoc(self.wfile)
-        pages = itertools.chain(
+        pages = list(itertools.chain(*(
             sheet.addrsheet(fromaddr, toaddr, toaddr['boe'])
-            for toaddr in toaddrs)
+            for toaddr in toaddrs)))
         doc.build(pages)
 
 def test_generation():

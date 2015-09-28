@@ -110,12 +110,14 @@ class RequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
         fromaddr = postvars
         numfliers = min(maxpages, int(postvars['numfliers']))
         toaddrs = list(itertools.islice(voterstream, numfliers))
-        log((self.client_address[0], 'FLIERS', fromaddr, [a['SBOEID'] for a in toaddrs]))
+        vids = [a['SBOEID'] for a in toaddrs]
         doc = sheet.makedoc(self.wfile)
         pages = list(itertools.chain(*(
             sheet.addrsheet(fromaddr, toaddr, toaddr['boe'], include_rego)
             for toaddr in toaddrs)))
         doc.build(pages)
+        log((self.client_address[0], 'FLIERS', fromaddr, vids))
+        processed_voters.update(set(vids))
 
 def test_generation():
     numfliers = 100

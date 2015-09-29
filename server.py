@@ -1,5 +1,6 @@
 import tempfile, BaseHTTPServer, cgi, os, shutil, SocketServer, time, os
-import Queue, threading, csv, sys, itertools, re, glob, dateutil, ast
+import Queue, threading, csv, sys, itertools, re, glob, dateutil.parser
+import ast
 
 p = '.'
 if p not in sys.path:
@@ -33,13 +34,19 @@ for p in glob.glob('logs/*.log'):
     for line in open(p):
         line = line.split()
         try:
-            dateutil.parser.parse(' '.join(line[:4]))
+            dateutil.parser.parse(' '.join(line[:5]))
         except ValueError:
             raise RuntimeError, 'Failed to parse log line "%s" in file %s' % (line, p)
-        logdata = ast.literal_eval(' '.join(line[4:]))
+        logdata = ast.literal_eval(' '.join(line[5:]))
         if logdata[1] == 'FLIERS':
             processed_voters.update(set(logdata[-1]))
 
+for line in open('processed.txt'):
+    if not line.strip().startswith('#'):
+        line = line.split()[0]
+        assert re.match('NY\d{18}', line)
+        processed_voters.add(line)
+        
 print '%i voters have already been processed and will be ignored' % len(processed_voters)
 
 field_names = ['LASTNAME', 'FIRSTNAME', 'MIDDLENAME', 'NAMESUFFIX', 'RADDNUMBER', 'RHALFCODE', 'RAPARTMENT', 'RPREDIRECTION', 'RSTREETNAME', 'RPOSTDIRECTION', 'RCITY', 'RZIP5', 'RZIP4', 'MAILADD1', 'MAILADD2', 'MAILADD3', 'MAILADD4', 'DOB', 'GENDER', 'ENROLLMENT', 'OTHERPARTY', 'COUNTYCODE', 'ED', 'LD', 'TOWNCITY', 'WARD', 'CD', 'SD', 'AD', 'LASTVOTEDDATE', 'PREVYEARVOTED', 'PREVCOUNTY', 'PREVADDRESS', 'PREVNAME', 'COUNTYVRNUMBER', 'REGDATE', 'VRSOURCE', 'IDREQUIRED', 'IDMET', 'STATUS', 'REASONCODE', 'INACT_DATE', 'PURGE_DATE', 'SBOEID', 'VoterHistory']

@@ -71,9 +71,9 @@ def disclaimer(fromaddr, toaddr):
         Spacer(1,0.5*inch)],
         [Paragraph("""
 
-        {fname} {lname}  (address above)  used nysmailing.com  and his
+        {fname} {lname}  (address above)  used nysmailing.xyz  and their
         personal resources to prepare & send this form, without anyone
-        else's permission,  because <b>he  or she  wants YOUR  vote to
+        else's permission,  because <b>they  want YOUR  vote to
         COUNT!</b>
 
         """.format(**fromaddr), postagebox, )

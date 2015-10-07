@@ -38,7 +38,7 @@ for p in glob.glob('logs/*.log'):
         except ValueError:
             raise RuntimeError, 'Failed to parse log line "%s" in file %s' % (line, p)
         logdata = ast.literal_eval(' '.join(line[5:]))
-        if logdata[1] == 'FLIERS':
+        if logdata[1] in ('FLIERS', 'FACEBOOK'):
             processed_voters.update(set(logdata[-1]))
 
 for line in open('processed.txt'):
@@ -53,13 +53,15 @@ field_names = ['LASTNAME', 'FIRSTNAME', 'MIDDLENAME', 'NAMESUFFIX', 'RADDNUMBER'
 
 #Database accessor.
 database_path = 'targeted_voters_sorted.csv'
-def _voterstream():
+def _voterstream(loop=True):
     while True:
         vdb = csv.DictReader(open(database_path),
                              fieldnames=field_names)
         for row in vdb:
             if row['SBOEID'] not in processed_voters:
-            yield row
+                yield row
+        if not loop:
+            break
 
 def voter(csventry):
     csventry['fname'] = csventry['FIRSTNAME'].title()
@@ -79,7 +81,11 @@ def voter(csventry):
     csventry['boe'] = boes.boes[int(csventry['COUNTYCODE'])-1]
     return csventry
 
-voterstream = itertools.imap(voter, _voterstream())
+full_voterstream = itertools.imap(voter, _voterstream())
+unique_names = set(map(tuple, csv.reader(open(('unique_at_risk_names.txt')))))
+def unique_p(v):
+    return (v['LASTNAME'], v['FIRSTNAME']) in unique_names
+unique_voterstream = itertools.ifilter(unique_p, full_voterstream)
 
 # Get the landing page
 form = open('form.html').read()
@@ -90,41 +96,17 @@ class RequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
         self.send_response(200)
         self.send_header("Content-type", "text/html")
         self.end_headers()
-        self.wfile.write(form)
-        log((self.client_address[0], 'FRONT'))
-
-    def do_POST(self):
-        ctype, pdict = cgi.parse_header(self.headers.getheader(
-            'content-type'))
-        if ctype == 'multipart/form-data':
-            postvars = cgi.parse_multipart(self.rfile, pdict)
-        elif ctype == 'application/x-www-form-urlencoded':
-            length = int(self.headers.getheader('content-length'))
-            postvars = cgi.parse_qs(self.rfile.read(length), 
-                                    keep_blank_values=1)
-        else:
-            postvars = {}
-        postvars = dict((n, ' '.join(v)) for n, v in postvars.items())
-        if 'singlesided' in postvars:
-            maxpages = 100
-            include_rego = False
-        else:
-            maxpages = 3
-            include_rego = True
-        self.send_response(200)
-        self.send_header('Content-type', 'application/pdf')
-        self.end_headers()
-        fromaddr = postvars
-        numfliers = min(maxpages, int(postvars['numfliers']))
-        toaddrs = list(itertools.islice(voterstream, numfliers))
-        vids = [a['SBOEID'] for a in toaddrs]
-        doc = sheet.makedoc(self.wfile)
-        pages = list(itertools.chain(*(
-            sheet.addrsheet(fromaddr, toaddr, toaddr['boe'], include_rego)
-            for toaddr in toaddrs)))
-        doc.build(pages)
-        log((self.client_address[0], 'FLIERS', fromaddr, vids))
-        processed_voters.update(set(vids))
+        facebook_targets = []
+        vids = []
+        template = '<tr><td>%s %s</td><td>%s</td></tr>\n' 
+        for voter in itertools.islice(unique_voterstream, 12):
+            vinfo = (voter['fname'], voter['lname'], voter['boe']['fname'].replace(' County Board of Elections', ''))
+            vids.append(voter['SBOEID'])
+            facebook_targets.append(template % vinfo)
+        facebook_list = '<table border="1" style="border-collapse: separate; border-spacing: 0.25em;">\n<tr><th>Name</th><th>County</th></tr>\n%s</table>'
+        facebook_list %= ''.join(facebook_targets)
+        self.wfile.write(form.replace('facebanking_names_go_here', facebook_list))
+        log((self.client_address[0], 'FACEBOOK', vids))
 
 def test_generation():
     numfliers = 100
